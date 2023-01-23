@@ -4,7 +4,7 @@ import java.io.File;
 /**
  * ISBN Validator imports, verifies, and stores ISBN numbers
  * @version January 20, 2023
- * @author jcochran
+ * @author 23truitt
  */
 public class ISBNValidator {
     private String filename;
@@ -12,10 +12,10 @@ public class ISBNValidator {
     private String[] invalidNums;
 
     /**
-     * simple constructor; initializes arrays
+     * simple constructor; initializes arrays of ISBNValidator
      */
     public ISBNValidator()  {
-        filename = "isbn_files/isbn1.dat";
+        filename = "isbn_files/isbn2.dat";
         int lines = 0;
         try {
             Scanner in = new Scanner(new File(filename));
@@ -59,44 +59,55 @@ public class ISBNValidator {
      * @return true if valid, false otherwise
      */
     public boolean isValidISBN(String isbn) {
-        return (int)(Math.random()*2) == 0;
+        int total = 0;
+        isbn = isbn.replaceAll("-", "");
+        for (int i = 0; i < isbn.length(); i++) {
+            if (i % 2 == 0)
+                total += Integer.parseInt(isbn.substring(i, i + 1));
+            else
+                total += 3*Integer.parseInt(isbn.substring(i, i + 1));
+        }
+        return (isbn.substring(0, 3).equals("978") || isbn.substring(0, 3).equals("979")) && (total % 10 == 0);
     }
+        /**
+         * output the user-picked ISBN list or quit the application
+         */
+        public void runProgram () {
+            Scanner userin = new Scanner(System.in);
+            System.out.println("* ISBN Validator Program *");
+            System.out.println("...Importing data...");
+            while (true) {
+                System.out.println("All ISBN data has been imported and validated. Would you like to:");
+                System.out.println("\t1) View all valid ISBN numbers\n" +
+                        "\t2) View all invalid ISBN numbers\n" +
+                        "\t3) Quit");
+                System.out.print("Your selection: ");
+                String userpick = userin.nextLine();
+                if (userpick.equals("3"))
+                    break;
+                else if (userpick.equals("1")) {
+                    for (int i = 0; i < validNums.length && validNums[i] != null; i++)
+                        System.out.println(validNums[i]);
+                } else if (userpick.equals("2")) {
+                    for (int i = 0; i < invalidNums.length && invalidNums[i] != null; i++)
+                        System.out.println(invalidNums[i]);
+                } else {
+                    System.out.println("Invalid selection, try again.");
+                }
+            }
+        }
 
     /**
-     * output the user-picked ISBN list or quit the application
+     * Runs all of the methods that are in the code
+     * @param args
      */
-    public void runProgram()    {
-        Scanner userin = new Scanner(System.in);
-        System.out.println("* ISBN Validator Program *");
-        System.out.println("...Importing data...");
-        while(true) {
-            System.out.println("All ISBN data has been imported and validated. Would you like to:");
-            System.out.println("\t1) View all valid ISBN numbers\n" +
-                    "\t2) View all invalid ISBN numbers\n" +
-                    "\t3) Quit");
-            System.out.print("Your selection: ");
-            String userpick = userin.nextLine();
-            if(userpick.equals("3"))
-                break;
-            else if (userpick.equals("1")) {
-                for(int i = 0; i < validNums.length && validNums[i] != null; i++)
-                    System.out.println(validNums[i]);
-            }
-            else if (userpick.equals("2")) {
-                for(int i = 0; i < invalidNums.length && invalidNums[i] != null; i++)
-                    System.out.println(invalidNums[i]);
-            }
-            else
-                System.out.println("Invalid selection, try again.");
+
+    public static void main (String[]args){
+            ISBNValidator app = new ISBNValidator();
+            System.out.println("* ISBN Validator Program *");
+            System.out.println("...Importing data...");
+            app.importData(); // imports data from the text file
+            app.runProgram(); // runs using a while loop; see examples
+            System.out.println("* End of Program *");
         }
     }
-
-    public static void main(String[] args){
-        ISBNValidator app = new ISBNValidator ();
-        System.out.println("* ISBN Validator Program *");
-        System.out.println("...Importing data...");
-        app.importData(); // imports data from the text file
-        app.runProgram(); // runs using a while loop; see examples
-        System.out.println("* End of Program *");
-    }
-}
